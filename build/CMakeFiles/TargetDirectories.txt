@@ -1,5 +1,0 @@
-/home/atabulog/repos/tabby-tools/build/CMakeFiles/edit_cache.dir
-/home/atabulog/repos/tabby-tools/build/CMakeFiles/rebuild_cache.dir
-/home/atabulog/repos/tabby-tools/build/common/CMakeFiles/common.dir
-/home/atabulog/repos/tabby-tools/build/common/CMakeFiles/edit_cache.dir
-/home/atabulog/repos/tabby-tools/build/common/CMakeFiles/rebuild_cache.dir
