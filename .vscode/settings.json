@@ -1,4 +1,7 @@
 {
     "C_Cpp.default.compilerPath": "/usr/bin/g++",
-    "cmake.sourceDirectory": "/home/atabulog/repos/tabby-tools/tabby-tools"
+    "cmake.sourceDirectory": "/home/atabulog/repos/tabby-tools/tabby-tools",
+    "files.associations": {
+        "chrono": "cpp"
+    }
 }
