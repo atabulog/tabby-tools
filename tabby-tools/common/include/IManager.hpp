@@ -15,7 +15,6 @@ namespace common
         Uninitialized,
         Running,
         Suspended,
-        Stopped,
         Terminated
     };
 

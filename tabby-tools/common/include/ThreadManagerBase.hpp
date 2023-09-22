@@ -80,17 +80,51 @@ namespace common
         ManagedState state();
 
         /**
+         * @brief Get the sleep duration in chrono::microseconds
+         * @return const std::chrono::microseconds& 
+         */
+        virtual const std::chrono::microseconds& sleep_duration();
+
+        /**
+         * @brief Set the sleep duration
+         * @param duration duration of sleep cycle in chrono::microseconds
+         */
+        virtual void sleep_duration(const std::chrono::microseconds& duration);
+        
+        /**
+         * @brief Set the sleep duration
+         * @param duration_us sleep duration as an integer in microseconds 
+         */
+        virtual void sleep_duration(const int duration_us);
+
+        /**
+         * @brief Sleeps the managed thread for specified sleep time
+         * @note Sleep can be terminated prematurely by calling stop()
+         */
+        virtual void sleep();
+    
+    protected:
+        
+        /**
+         * @brief Destroy the Thread Manager Base object
+         * @note set to protected (non-virtual) to ensure called by derived class
+         */
+        ~ThreadManagerBase();
+
+        /**
          * @brief Pure virtual thread execution method
          */
         virtual void execute() = 0;
-    
-    protected:
+
+
         std::mutex lock_; //lock for entire manager
         ManagedState state_; //state value for manager
         std::thread process_; //execution thread for managed content
         std::chrono::microseconds sleep_duration_; //duration of a sleep cycle
     
     private:
+        void thread_loop();
+
         std::condition_variable interrupt_signal_; //interrupt variable to wake from sleep
         std::mutex sleep_lock_; //mutex specifically for sleep interruption
     };
