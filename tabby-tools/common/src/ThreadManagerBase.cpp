@@ -38,7 +38,7 @@ void ThreadManagerBase::start()
     {
         std::lock_guard<std::mutex> guard{lock_};
         state_ = ManagedState::Running;
-        process_ = std::thread(&process_, this);
+        process_ = std::thread(&ThreadManagerBase::process_, this);
     }
 }
 
