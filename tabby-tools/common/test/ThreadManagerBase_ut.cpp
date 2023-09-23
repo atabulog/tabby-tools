@@ -1,3 +1,4 @@
+#include <memory>
 #include <catch2/catch_test_macros.hpp>
 #include "ThreadManagerBase.hpp"
 
@@ -11,17 +12,62 @@ public:
         i{0}
     {}
 
+    MockManager(int sleep_us):
+        common::ThreadManagerBase(sleep_us),
+        i{0}
+    {}
+
     void execute()
     {
         i++;
+        sleep();
     }
+
 private:
     int i;
 };
 
-TEST_CASE("Verify dummy", "ThreadManagerBase")
+class ManagerTestFixture
 {
-    auto uut = MockManager();
+public:
+    ManagerTestFixture()
+    {
+        duration_ = std::chrono::microseconds(10000);
+        uut_ = MockManager{(int) duration_.count()};
+    }
 
-    REQUIRE(uut.sleep_duration() == std::chrono::microseconds(1000));
+protected:
+    MockManager uut_;
+
+private:
+    std::chrono::microseconds duration_;
+};
+
+TEST_CASE_METHOD(ManagerTestFixture, "verify start method", "[ThreadManagerBase]")
+{
+    REQUIRE(uut_.state() == common::ManagedState::Uninitialized);
+    uut_.start();
+    REQUIRE(uut_.state() == common::ManagedState::Running);
+}
+
+TEST_CASE_METHOD(ManagerTestFixture, "verify stop method", "[ThreadManagerBase]")
+{
+    uut_.start();
+    uut_.stop();
+    REQUIRE(uut_.state() == common::ManagedState::Terminated);
+}
+
+TEST_CASE_METHOD(ManagerTestFixture, "verify pause method", "[ThreadManagerBase]")
+{
+    uut_.start();
+    uut_.pause();
+    REQUIRE(uut_.state() == common::ManagedState::Suspended);
+}
+
+TEST_CASE_METHOD(ManagerTestFixture, "verify resume method", "[ThreadManagerBase]")
+{
+    uut_.start();
+    uut_.pause();
+    uut_.resume();
+    REQUIRE(uut_.state() == common::ManagedState::Running);
 }

@@ -4,6 +4,7 @@ find_package(Catch2 3 REQUIRED)
 set(TestCommon ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(CommonTests
+    TestMain.cpp
     ThreadManagerBase_ut.cpp)
 
 target_link_libraries(CommonTests PUBLIC 
@@ -11,7 +12,7 @@ target_link_libraries(CommonTests PUBLIC
     Catch2::Catch2WithMain)
 
 include(CTest)
-include(ParseAndAddCatchTests)
-ParseAndAddCatchTests(CommonTests)
+include(Catch)
+catch_discover_tests(CommonTests)
 
 add_test(NAME ${TestCommon} COMMAND ${TestCommon})
