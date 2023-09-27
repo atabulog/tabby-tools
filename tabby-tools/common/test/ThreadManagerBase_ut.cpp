@@ -40,7 +40,7 @@ private:
 };
 
 
-TEST_CASE("verify start method", "[ThreadManagerBase]")
+TEST_CASE("ThreadManagerBase.start", "[ThreadManagerBase]")
 {
     auto uut_ = MockManager{500};
     REQUIRE(uut_.state() == common::ManagedState::Uninitialized);
@@ -52,7 +52,7 @@ TEST_CASE("verify start method", "[ThreadManagerBase]")
     
 }
 
-TEST_CASE("verify stop method", "[ThreadManagerBase]")
+TEST_CASE("ThreadManagerBase.stop", "[ThreadManagerBase]")
 {
     auto uut_ = MockManager{500};
     uut_.start();
@@ -64,7 +64,7 @@ TEST_CASE("verify stop method", "[ThreadManagerBase]")
     REQUIRE(res == uut_.get_count());
 }
 
-TEST_CASE("verify pause method", "[ThreadManagerBase]")
+TEST_CASE("ThreadManagerBase.pause", "[ThreadManagerBase]")
 {
     auto uut_ = MockManager{500};
     uut_.start();
@@ -78,7 +78,7 @@ TEST_CASE("verify pause method", "[ThreadManagerBase]")
 
 }
 
-TEST_CASE("verify resume method", "[ThreadManagerBase]")
+TEST_CASE("ThreadManagerBase.resume", "[ThreadManagerBase]")
 {
     auto uut_ = MockManager{500};
     uut_.start();
@@ -94,7 +94,7 @@ TEST_CASE("verify resume method", "[ThreadManagerBase]")
     uut_.stop();
 }
 
-TEST_CASE("verify sleep duration accessors", "[ThreadManagerBase]")
+TEST_CASE("ThreadManagerBase.sleep_duration", "[ThreadManagerBase]")
 {
     auto uut_ = MockManager{500};
     REQUIRE(uut_.sleep_duration() == std::chrono::microseconds(500));
