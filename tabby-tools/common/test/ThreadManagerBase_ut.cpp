@@ -22,13 +22,16 @@ public:
 
     void execute()
     {
-        i++;
+        {
+            std::lock_guard<std::mutex> guard{lock_};
+            i++;
+        }
         this->sleep();
     }
 
     int get_count()
     {
-        std::cout << "yeet" << std::endl;
+        std::lock_guard<std::mutex> guard{lock_};
         return i;
     }
 
@@ -36,35 +39,22 @@ private:
     int i;
 };
 
-class ManagerTestFixture
+
+TEST_CASE("verify start method", "[ThreadManagerBase]")
 {
-public:
-    ManagerTestFixture()
-    {
-        duration_ = std::chrono::microseconds(50);
-        uut_ = MockManager{(int) duration_.count()};
-    }
-
-protected:
-    MockManager uut_;
-
-private:
-    std::chrono::microseconds duration_;
-};
-
-TEST_CASE_METHOD(ManagerTestFixture, "verify start method", "[ThreadManagerBase]")
-{
+    auto uut_ = MockManager{500};
     REQUIRE(uut_.state() == common::ManagedState::Uninitialized);
     uut_.start();
     REQUIRE(uut_.state() == common::ManagedState::Running);
-    
-    std::this_thread::sleep_for (std::chrono::microseconds(1000));
+    std::this_thread::sleep_for(std::chrono::microseconds(1000));
     REQUIRE(uut_.get_count() > 0);
+    uut_.stop();
     
 }
 
-TEST_CASE_METHOD(ManagerTestFixture, "verify stop method", "[ThreadManagerBase]")
+TEST_CASE("verify stop method", "[ThreadManagerBase]")
 {
+    auto uut_ = MockManager{500};
     uut_.start();
     uut_.stop();
     auto res = uut_.get_count();
@@ -74,8 +64,9 @@ TEST_CASE_METHOD(ManagerTestFixture, "verify stop method", "[ThreadManagerBase]"
     REQUIRE(res == uut_.get_count());
 }
 
-TEST_CASE_METHOD(ManagerTestFixture, "verify pause method", "[ThreadManagerBase]")
+TEST_CASE("verify pause method", "[ThreadManagerBase]")
 {
+    auto uut_ = MockManager{500};
     uut_.start();
     uut_.pause();
     auto res = uut_.get_count();
@@ -83,11 +74,13 @@ TEST_CASE_METHOD(ManagerTestFixture, "verify pause method", "[ThreadManagerBase]
 
     std::this_thread::sleep_for (std::chrono::microseconds(1000));
     REQUIRE(res == uut_.get_count());
+    uut_.stop();
 
 }
 
-TEST_CASE_METHOD(ManagerTestFixture, "verify resume method", "[ThreadManagerBase]")
+TEST_CASE("verify resume method", "[ThreadManagerBase]")
 {
+    auto uut_ = MockManager{500};
     uut_.start();
     std::this_thread::sleep_for (std::chrono::microseconds(1000));
     
@@ -98,11 +91,13 @@ TEST_CASE_METHOD(ManagerTestFixture, "verify resume method", "[ThreadManagerBase
 
     std::this_thread::sleep_for (std::chrono::microseconds(1000));
     REQUIRE(res < uut_.get_count());
+    uut_.stop();
 }
 
-TEST_CASE_METHOD(ManagerTestFixture, "verify sleep duration accessors", "[ThreadManagerBase]")
+TEST_CASE("verify sleep duration accessors", "[ThreadManagerBase]")
 {
-    REQUIRE(uut_.sleep_duration() == std::chrono::microseconds(50));
+    auto uut_ = MockManager{500};
+    REQUIRE(uut_.sleep_duration() == std::chrono::microseconds(500));
 
     //set to new microsecond value
     auto set_micro = std::chrono::microseconds(500);
@@ -113,5 +108,5 @@ TEST_CASE_METHOD(ManagerTestFixture, "verify sleep duration accessors", "[Thread
     int set_int = 5000;
     uut_.sleep_duration(set_int);
     REQUIRE(uut_.sleep_duration() == std::chrono::microseconds(set_int));
-
+    uut_.stop();
 }

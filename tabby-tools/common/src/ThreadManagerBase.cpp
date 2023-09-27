@@ -1,6 +1,6 @@
 
 #include "ThreadManagerBase.hpp"
-
+#include <iostream>
 using namespace common;
 
 ThreadManagerBase::ThreadManagerBase():
@@ -39,7 +39,7 @@ void ThreadManagerBase::start()
     {
         std::lock_guard<std::mutex> guard{lock_};
         state_ = ManagedState::Running;
-        process_ = std::thread(&ThreadManagerBase::process_, this);
+        process_ = std::thread(&ThreadManagerBase::thread_loop, this);
     }
 }
 
@@ -49,6 +49,7 @@ void ThreadManagerBase::stop()
        state_ == ManagedState::Suspended)
     {
         std::lock_guard<std::mutex> guard{lock_};
+        
         state_ = ManagedState::Terminated;
         interrupt_signal_.notify_one();
         process_.join();
@@ -109,11 +110,11 @@ void ThreadManagerBase::sleep()
 void ThreadManagerBase::thread_loop()
 {
     //terminate thread loop upon state set to end or fault
-    while(state() != ManagedState::Fault || 
-          state() != ManagedState::Terminated)
+    while(state_ != ManagedState::Fault && 
+          state_ != ManagedState::Terminated)
     {
         //only execute thread logic if set to running
-        if(state() == ManagedState::Running)
+        if(state_ == ManagedState::Running)
         {
             execute();
         }
