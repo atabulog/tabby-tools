@@ -61,5 +61,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "SUSPENDABLE"
+    ]
 }
